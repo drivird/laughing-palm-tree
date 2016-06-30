@@ -1,0 +1,15 @@
+A cartoon theme typing tutor.
+
+I tried to design it fast paced, exciting and somewhat challenging. The original theme is all about the Trashies because it is my kid's current obsession; and learning should be fun. By replacing the sound and image files content the game's theme can be easily modified.
+
+In order to compile, you will have to modify the MSVC2013 solution properties so that your Cinder directory is well referenced. Mine was at D:\cinder_0.9.0_vc2013 at the time of writing.
+
+Once compiled, if you wish to run this game, you should look into the TypingTutor/bin directory for the executable and artwork.
+
+Some tips:
+Esc gives you access to the game menus and let you come back from them. 
+F1, in game mode, makes a new screenshot into screens/ directory; useful to record a high score.
+
+TypingTutor is released under the 2-Clause BSD License.
+
+Enjoy!
