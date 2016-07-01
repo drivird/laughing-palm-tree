@@ -64,6 +64,7 @@ class TypingTutorApp : public TypingTutorInterface {
       void setupSoundTrack();
       void resetGame();
 
+      bool mPositionWindowOnceFlag{ true };
       gl::TextureRef mBg;
       audio::GainNodeRef mSoundTrackGain;
       audio::BufferPlayerNodeRef mSoundTrackPlayerNode;
@@ -131,9 +132,8 @@ void TypingTutorApp::draw()
    gl::clear(Color(0, 0, 0));
    gl::enableAlphaBlending();
 
-   static bool OnceFlag = true;
-   if (OnceFlag) {
-      OnceFlag = false;
+   if (mPositionWindowOnceFlag) {
+      mPositionWindowOnceFlag = false;
       setWindowSize(mBg->getSize());
       const auto displayWidth = getWindow()->getDisplay()->getWidth();
       const auto displayHeight = getWindow()->getDisplay()->getHeight();

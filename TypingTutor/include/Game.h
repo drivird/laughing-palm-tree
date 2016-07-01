@@ -81,6 +81,7 @@ class Game : public AppState {
 
       GameState mState{ GameState::Preset };
       bool mKeyEscapeFlag{ false };
+      bool mPerfectGameBonusOnceFlag{ true };
       bool mPerfectGameFlag{ true };
       double mDuration{ 0.0 };
       double mTimePenalty{ 0.0 };

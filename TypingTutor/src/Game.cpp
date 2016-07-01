@@ -222,9 +222,8 @@ void Game::draw(const TypingTutorInterface& rApp)
 
    if (mState == GameState::GameOver) {
       drawGameOver(rApp);
-      static auto oneTimerFlag = true;
-      if (oneTimerFlag) {
-         oneTimerFlag = false;
+      if (mPerfectGameBonusOnceFlag && mPerfectGameFlag) {
+         mPerfectGameBonusOnceFlag = false;
          newStreakBonus(mScore, rApp.getWindowCenter());
       }
    }
