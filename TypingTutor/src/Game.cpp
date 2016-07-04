@@ -203,6 +203,9 @@ void Game::updateNextSpawingTime()
 
 void Game::draw(const TypingTutorInterface& rApp)
 {
+   gl::drawStringCentered("Esc: main menu, F1: screenshot (saved in screens folder)", vec2(0.5*rApp.getWindowWidth(), 5), TRANSPARENT_BLACK, Font("Comic Sans MS", 20));
+   gl::drawStringCentered("Esc: main menu, F1: screenshot (saved in screens folder)", vec2(0.5*rApp.getWindowWidth(), 5), WHITE            , Font("Comic Sans MS", 20));
+
    mKb.draw(rApp);
    mTimeBar.draw(rApp, computeFillRatio(), mDuration);
    drawScore(rApp);
@@ -250,8 +253,8 @@ void Game::drawScore(const TypingTutorInterface& rApp) const
 {
    std::ostringstream scoreStringStream;
    scoreStringStream << static_cast<int>(mScore);
-   gl::drawStringCentered(scoreStringStream.str(), vec2(0.5*rApp.getWindowWidth(), 5), TRANSPARENT_BLACK, Font("Comic Sans MS", 75));
-   gl::drawStringCentered(scoreStringStream.str(), vec2(0.5*rApp.getWindowWidth(), 5), WHITE            , Font("Comic Sans MS", 72));
+   gl::drawStringCentered(scoreStringStream.str(), vec2(0.5*rApp.getWindowWidth(), 8), TRANSPARENT_BLACK, Font("Comic Sans MS", 75));
+   gl::drawStringCentered(scoreStringStream.str(), vec2(0.5*rApp.getWindowWidth(), 8), WHITE            , Font("Comic Sans MS", 72));
 }
 
 void Game::drawGameOver(const TypingTutorInterface& rApp) const
