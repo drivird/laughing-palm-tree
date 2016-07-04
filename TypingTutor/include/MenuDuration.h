@@ -33,7 +33,7 @@ class MenuDuration : public Menu {
       MenuDuration();
 
    private:
-      enum class Duration{ One, Three, Five, Last };
+      enum class Duration{ One, Two, Three, Four, Five, Last };
 
       virtual void updateImpl(TypingTutorInterface* pApp) override;
 };

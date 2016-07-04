@@ -33,7 +33,9 @@ MenuDuration::MenuDuration()
 {
    mHeader = "GAME DURATION";
    mOptions.emplace_back("1 minute");
+   mOptions.emplace_back("2 minutes");
    mOptions.emplace_back("3 minutes");
+   mOptions.emplace_back("4 minutes");
    mOptions.emplace_back("5 minutes");
 }
 
@@ -45,7 +47,9 @@ void MenuDuration::updateImpl(TypingTutorInterface* pApp)
 
    switch (duration) {
       case Duration::One  : pApp->setGameDuration( 60.0); break;
+      case Duration::Two  : pApp->setGameDuration(120.0); break;
       case Duration::Three: pApp->setGameDuration(180.0); break;
+      case Duration::Four : pApp->setGameDuration(240.0); break;
       case Duration::Five : pApp->setGameDuration(300.0); break;
    }
 
