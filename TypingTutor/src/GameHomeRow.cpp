@@ -31,4 +31,5 @@ Game(duration)
    mKb.loadImageFile("images/kb_home_row.png");
    mKb.enableRow(2);
    mMaxNbToons = 2;
+   mStreakMaxInc = 20;
 }

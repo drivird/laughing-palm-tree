@@ -33,4 +33,5 @@ Game(duration)
    mKb.enableRow(2);
    mKb.enableRow(3);
    mMaxNbToons = 3;
+   mStreakMaxInc = 40;
 }

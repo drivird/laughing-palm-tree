@@ -320,10 +320,12 @@ void Game::keyDown(int code)
 void Game::incStreakCount(int keyCode)
 {
    if (++mStreakCnt == mStreakThreshold) {
+      mStreakCntFloor = mStreakCnt;
       const auto pos = mKb.getKeyRectf(keyCode).getCenter();
       const auto bonus = 10 * mStreakThreshold;
       newStreakBonus(bonus, pos);
-      mStreakThreshold *= 2;
+      const auto streakAdd = std::min(mStreakThreshold, mStreakMaxInc);
+      mStreakThreshold += streakAdd;
    }
 }
 
@@ -344,7 +346,7 @@ void Game::newStreakBonus(double bonus, vec2 pos)
 
 void Game::resetStreakCount()
 {
-   mStreakCnt = 0;
+   mStreakCnt = mStreakCntFloor;
    mPerfectGameFlag = false;
 }
 

@@ -88,7 +88,9 @@ class Game : public AppState {
       double mSpawningTime{ 3.0 };
       double mScore{ 0.0 };
       int mStreakCnt{ 0 };
+      int mStreakCntFloor{ 0 };
       int mStreakThreshold{ 5 };
+      int mStreakMaxInc{ 10 };
       int mMaxNbToons{ 1 };
       ci::Timer mTimer{ true };
       Keyboard mKb;
