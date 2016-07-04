@@ -86,6 +86,7 @@ class Game : public AppState {
       double mDuration{ 0.0 };
       double mTimePenalty{ 0.0 };
       double mSpawningTime{ 3.0 };
+      double mSpawningTimeCoef{ 1.0 };
       double mScore{ 0.0 };
       int mStreakCnt{ 0 };
       int mStreakCntFloor{ 0 };

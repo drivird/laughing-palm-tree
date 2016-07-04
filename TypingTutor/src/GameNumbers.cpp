@@ -35,4 +35,5 @@ Game(duration)
    mKb.enableRow(3);
    mMaxNbToons = 4;
    mStreakMaxInc = 80;
+   mSpawningTimeCoef = 0.6;
 }

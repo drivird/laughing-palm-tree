@@ -198,7 +198,7 @@ Toon* Game::randSelectToon()
 void Game::updateNextSpawingTime()
 {
    const auto randNumber = Rand::randFloat(0.3f, 1.0f);
-   mSpawningTime = mTimer.getSeconds() + randNumber;
+   mSpawningTime = mTimer.getSeconds() + mSpawningTimeCoef * randNumber;
 }
 
 void Game::draw(const TypingTutorInterface& rApp)
