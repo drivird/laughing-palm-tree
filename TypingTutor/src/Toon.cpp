@@ -31,12 +31,21 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using namespace ci;
 
 const double Toon::SPAWNING_DURATION = 0.15;
+const double Toon::ESCAPING_DURATION = 0.1;
 const double Toon::INGAME_DURATION = 5.0;
+const double Toon::SHAKING_DURATION = 2.0;
 const double Toon::GRAVITY = 1000.0;
 
-Toon::Toon(const fs::path& filename)
+Toon::Toon(const fs::path& filename, double reducedTimeCoef)
 {
    mTexture = gl::Texture::create(loadImage(filename));
+   mCanEscapeFlag = (reducedTimeCoef > 0.0);
+   mIngameDuration = INGAME_DURATION;
+   mShakingDuration = SHAKING_DURATION;
+   if (mCanEscapeFlag) { 
+      mIngameDuration *= reducedTimeCoef; 
+      mShakingDuration *= reducedTimeCoef;
+   }
 }
 
 void Toon::spawn()
@@ -45,14 +54,20 @@ void Toon::spawn()
    mTimer.start();
 }
 
-void Toon::draw(const TypingTutorInterface& rApp, const ci::Rectf& keyRect)
+bool Toon::draw(const TypingTutorInterface& rApp, const ci::Rectf& keyRect)
 {
+   auto escapedFlag = false;
+
    Rectf toonRect(mTexture->getBounds());
 
    const auto keyCenter = keyRect.getCenter();
    const auto startingPos = keyCenter + vec2(0, 0.5 * (keyRect.getHeight() + toonRect.getHeight()));
 
    switch (mState) {
+
+      case State::Available: {
+         return escapedFlag; // nothing to draw
+      } break;
 
       case State::Spawning: {
          toonRect.offsetCenterTo(startingPos);
@@ -61,7 +76,15 @@ void Toon::draw(const TypingTutorInterface& rApp, const ci::Rectf& keyRect)
       } break;
 
       case State::InGame: {
-         toonRect.offsetCenterTo(startingPos);
+         auto offset = vec2(0, 0);
+         if (mCanEscapeFlag) {
+            const auto timeRemaining = mIngameDuration - mTimer.getSeconds();
+            if (0.0 < timeRemaining && timeRemaining < mShakingDuration) {
+               const auto d = Rand::randFloat(5.0f);
+               offset = d * Rand::randVec2();
+            }
+         }
+         toonRect.offsetCenterTo(startingPos + offset);
       } break;
 
       case State::Hurled: {
@@ -86,29 +109,48 @@ void Toon::draw(const TypingTutorInterface& rApp, const ci::Rectf& keyRect)
          const auto currentPos = vec2(x, z);
          toonRect.offsetCenterTo(currentPos);
       } break;
+
+      case State::Escaping: {
+         toonRect.offsetCenterTo(startingPos);
+         auto t = mTimer.getSeconds() / ESCAPING_DURATION;
+         if (t > 1.0) { 
+            t = 1.0;
+            reset();
+            escapedFlag = true;
+         }
+         const auto scale = 1.0 - t;
+         toonRect.scaleCentered(static_cast<float>(scale));
+      } break;
    }
 
    gl::draw(mTexture, toonRect);
 
    if (!toonRect.intersects(rApp.getWindowBounds())) {
-      mState = State::Available;
-      mTimer.stop();
-      mScore = 0.0;
-      mAngle = 0.0;
+      reset();
    }
+
+   return escapedFlag;
 }
 
 void Toon::update()
 {
    switch (mState) {
-
       case State::Spawning: {
          if (mTimer.getSeconds() > SPAWNING_DURATION) {
             mState = State::InGame;
             mTimer.stop();
             mTimer.start();
          }
-      }
+      } break;
+
+      case State::InGame: {
+         const auto timeRemaining = mIngameDuration - mTimer.getSeconds();
+         if (mCanEscapeFlag && timeRemaining < 0.0) {
+            mState = State::Escaping;
+            mTimer.stop();
+            mTimer.start();
+         }
+      } break;
    }
 }
 
@@ -116,8 +158,16 @@ double Toon::hurl()
 {
    mState = State::Hurled;
    mAngle = static_cast<double>(Rand::randFloat(70.0f, 110.0f));
-   mScore = std::ceil(10.0 * std::max((INGAME_DURATION - mTimer.getSeconds()) / INGAME_DURATION, 0.0));
+   mScore = std::ceil(10.0 * std::max((mIngameDuration - mTimer.getSeconds()) / mIngameDuration, 0.0));
    mTimer.stop();
    mTimer.start();
    return mScore;
+}
+
+void Toon::reset()
+{
+   mState = State::Available;
+   mTimer.stop();
+   mScore = 0.0;
+   mAngle = 0.0;
 }

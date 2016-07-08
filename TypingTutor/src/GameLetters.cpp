@@ -26,7 +26,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "GameLetters.h"
 
 GameLetters::GameLetters(double duration) :
-Game(duration)
+Game(duration, 0.8)
 {
    mKb.loadImageFile("images/kb_letters.png");
    mKb.enableRow(1);
@@ -34,5 +34,4 @@ Game(duration)
    mKb.enableRow(3);
    mMaxNbToons = 3;
    mStreakMaxInc = 40;
-   mSpawningTimeCoef = 0.8;
 }

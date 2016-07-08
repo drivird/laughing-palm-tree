@@ -26,7 +26,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "GamePositioning.h"
 
 GamePositioning::GamePositioning(double duration) :
-Game(duration)
+Game(duration, 0.0)
 {
    mKb.loadImageFile("images/kb_positioning.png");
    mKb.enableRow(2);

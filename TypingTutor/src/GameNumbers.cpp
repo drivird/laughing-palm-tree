@@ -26,7 +26,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "GameNumbers.h"
 
 GameNumbers::GameNumbers(double duration) :
-Game(duration)
+Game(duration, 0.6)
 {
    mKb.loadImageFile("images/kb_numbers.png");
    mKb.enableRow(0);
@@ -35,5 +35,4 @@ Game(duration)
    mKb.enableRow(3);
    mMaxNbToons = 4;
    mStreakMaxInc = 80;
-   mSpawningTimeCoef = 0.6;
 }

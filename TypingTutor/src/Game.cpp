@@ -39,8 +39,9 @@ const Colorf Game::GREEN = Colorf(75.0f / 255.0f, 170.0f / 255.0f, 66.0f / 255.0
 const Colorf Game::WHITE = Colorf(1.0f, 1.0f, 1.0f);
 const double Game::STREAK_BONUS_EXPIRATION = 1.0;
 
-Game::Game(double duration) : 
-mDuration(duration)
+Game::Game(double duration, double gameSpeedCoef) :
+mDuration(duration),
+mGameSpeedCoef(gameSpeedCoef)
 {
    loadToons();
    loadSounds();
@@ -53,7 +54,7 @@ void Game::loadToons()
       while (true) {
          std::ostringstream filename;
          filename << "images/toon" << n++ << ".png";
-         Toon toon(filename.str());
+         Toon toon(filename.str(), mGameSpeedCoef);
          mToons.push_back(toon);
       }
    }
@@ -70,6 +71,7 @@ void Game::loadSounds()
    auto ctx = audio::Context::master();
 
    loadSound("sounds/grow.mp3"  , 0.3f, ctx, &mToonGrowPlayerNode   , &mToonGrowGain   );
+   loadSound("sounds/shrink.mp3", 0.3f, ctx, &mToonShrinkPlayerNode , &mToonShrinkGain );
    loadSound("sounds/boing1.mp3", 1.0f, ctx, &mToonBoing1PlayerNode , &mToonBoing1Gain );
    loadSound("sounds/boing2.mp3", 1.0f, ctx, &mToonBoing2PlayerNode , &mToonBoing2Gain );
    loadSound("sounds/boing3.mp3", 1.0f, ctx, &mToonBoing3PlayerNode , &mToonBoing3Gain );
@@ -116,38 +118,39 @@ void Game::update(TypingTutorInterface* pApp)
    if (mTimer.getSeconds() + mTimePenalty > mDuration) {
       mState = GameState::GameOver;
    }
+   else {
+      if (mTimer.getSeconds() > mSpawningTime) {
 
-   if (mTimer.getSeconds() > mSpawningTime) {
-      
-      if (mState == GameState::Preset) {
-         mState = GameState::Playing;
-         mTimer.stop();
-         mTimer.start();
+         if (mState == GameState::Preset) {
+            mState = GameState::Playing;
+            mTimer.stop();
+            mTimer.start();
+         }
+
+         const auto pToon = randSelectToon();
+         const auto key = mKb.randSelectKey();
+         if (pToon != nullptr && key != KeyEvent::KEY_UNKNOWN) {
+            mKeyToonPairs.emplace_back(key, pToon);
+            mKb.selectKey(key);
+            pToon->spawn();
+            mToonGrowPlayerNode->start();
+         }
+         updateNextSpawingTime();
       }
-      
-      const auto pToon = randSelectToon();
-      const auto key = mKb.randSelectKey();
-      if (pToon != nullptr && key != KeyEvent::KEY_UNKNOWN) {
-         mKeyToonPairs.emplace_back(key, pToon);
-         mKb.selectKey(key);
-         pToon->spawn();
-         mToonGrowPlayerNode->start();
+
+      for (auto& i : mKeyToonPairs) {
+         const auto keyCode = i.first;
+         const auto pToon = i.second;
+         pToon->update();
       }
-      updateNextSpawingTime();
-   }
 
-   for (auto& i : mKeyToonPairs) {
-      const auto keyCode = i.first;
-      const auto pToon = i.second;
-      pToon->update();
+      mKeyToonPairs.erase(
+         std::remove_if(
+            mKeyToonPairs.begin(),
+            mKeyToonPairs.end(),
+            [](const KeyToonPair& r){ return r.second->isAvailable(); }),
+         mKeyToonPairs.end());
    }
-
-   mKeyToonPairs.erase(
-      std::remove_if(
-         mKeyToonPairs.begin(), 
-         mKeyToonPairs.end(), 
-         [](const KeyToonPair& r){ return r.second->isAvailable(); }),
-      mKeyToonPairs.end());
 
    const auto time = mTimer.getSeconds();
    mStreakBonuses.erase(
@@ -198,7 +201,8 @@ Toon* Game::randSelectToon()
 void Game::updateNextSpawingTime()
 {
    const auto randNumber = Rand::randFloat(0.3f, 1.0f);
-   mSpawningTime = mTimer.getSeconds() + mSpawningTimeCoef * randNumber;
+   const auto timeCoef = (mGameSpeedCoef > 0.0) ? mGameSpeedCoef : 1.0;
+   mSpawningTime = mTimer.getSeconds() + timeCoef * randNumber;
 }
 
 void Game::draw(const TypingTutorInterface& rApp)
@@ -212,8 +216,14 @@ void Game::draw(const TypingTutorInterface& rApp)
    drawStreak(rApp);
 
    for (auto it = mKeyToonPairs.crbegin(); it != mKeyToonPairs.crend(); ++it) {
+      const auto keyCode = it->first;
       const auto pToon = it->second;
-      pToon->draw(rApp, mKb.getKeyRectf(it->first));
+      const auto escapedFlag = pToon->draw(rApp, mKb.getKeyRectf(it->first));
+      if (escapedFlag) {
+         resetStreakCount();
+         mToonShrinkPlayerNode->start();
+         mKb.deselectKey(keyCode);
+      }
    }
 
    for (auto it = mKeyToonPairs.crbegin(); it != mKeyToonPairs.crend(); ++it) {

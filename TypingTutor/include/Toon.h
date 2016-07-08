@@ -30,21 +30,25 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 class Toon {
    public:
-      Toon(const ci::fs::path& filename);
+      Toon(const ci::fs::path& filename, double reducedTimeCoef);
 
       bool isAvailable() const;
       bool isInGame() const;
       bool isHurled() const;
       void spawn();
-      void draw(const TypingTutorInterface& rApp, const ci::Rectf& keyRect);
+      bool draw(const TypingTutorInterface& rApp, const ci::Rectf& keyRect);
       void update();
       double hurl();
 
    private:
-      enum class State{ Available, Spawning, InGame, Hurled };
+      void reset();
+
+      enum class State{ Available, Spawning, InGame, Hurled, Escaping };
 
       static const double SPAWNING_DURATION;
+      static const double ESCAPING_DURATION;
       static const double INGAME_DURATION;
+      static const double SHAKING_DURATION;
       static const double GRAVITY;
 
       State mState{ State::Available };
@@ -52,6 +56,9 @@ class Toon {
       ci::Timer mTimer{ false };
       double mScore{ 0.0 };
       double mAngle{ 0.0 };
+      double mIngameDuration{ 0.0 };
+      double mShakingDuration{ 0.0 };
+      bool mCanEscapeFlag{ false };
 };
 
 inline

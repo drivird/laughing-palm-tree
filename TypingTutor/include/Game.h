@@ -35,7 +35,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 class Game : public AppState {
    public:
-      Game(double duration);
+      Game(double duration, double gameSpeedCoef);
       virtual ~Game() = 0 {}
 
       virtual void update(TypingTutorInterface* pApp) override;
@@ -84,9 +84,9 @@ class Game : public AppState {
       bool mPerfectGameBonusOnceFlag{ true };
       bool mPerfectGameFlag{ true };
       double mDuration{ 0.0 };
+      double mGameSpeedCoef{ 1.0 };
       double mTimePenalty{ 0.0 };
       double mSpawningTime{ 3.0 };
-      double mSpawningTimeCoef{ 1.0 };
       double mScore{ 0.0 };
       int mStreakCnt{ 0 };
       int mStreakCntFloor{ 0 };
@@ -100,12 +100,14 @@ class Game : public AppState {
       VKeyToon mKeyToonPairs;
       VStreakBonus mStreakBonuses;
       ci::audio::GainNodeRef mToonGrowGain;
+      ci::audio::GainNodeRef mToonShrinkGain;
       ci::audio::GainNodeRef mToonBoing1Gain;
       ci::audio::GainNodeRef mToonBoing2Gain;
       ci::audio::GainNodeRef mToonBoing3Gain;
       ci::audio::GainNodeRef mToonBuzzGain;
       ci::audio::GainNodeRef mStreakBonusGain;
       ci::audio::BufferPlayerNodeRef mToonGrowPlayerNode;
+      ci::audio::BufferPlayerNodeRef mToonShrinkPlayerNode;
       ci::audio::BufferPlayerNodeRef mToonBoing1PlayerNode;
       ci::audio::BufferPlayerNodeRef mToonBoing2PlayerNode;
       ci::audio::BufferPlayerNodeRef mToonBoing3PlayerNode;

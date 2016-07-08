@@ -26,7 +26,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "GameHomeRow.h"
 
 GameHomeRow::GameHomeRow(double duration) :
-Game(duration)
+Game(duration, 1.0)
 {
    mKb.loadImageFile("images/kb_home_row.png");
    mKb.enableRow(2);
